@@ -1,7 +1,4 @@
-document.addEventListener("DOMContentLoaded", function(event) {
-  let addButton = document.getElementById('add_button');
-  addButton.addEventListener('click', function(){
-    let form = '<div class="row">\
+let form = '<div class="row">\
     <form class="col s12" action="/add" method = "get">\
       <div class="row">\
         <div class="input-field col s12">\
@@ -18,6 +15,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
       <input type = "submit" class="waves-effect waves-light btn" id="submit_button" value="제출"/>\
     </form>\
   </div>';
+document.addEventListener("DOMContentLoaded", function(event) {
+  let addButton = document.getElementById('add_button');
+  let editButton = document.getElementById('edit_button');
+  addButton.addEventListener('click', function(){
     let options = document.getElementById('options');
     options.innerHTML += form;
     document.getElementById('submit_button').addEventListener('click', function(){
@@ -25,5 +26,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         alert('모든 값을 입력해주세요');
       }
     });
+  });
+  editButton.addEventListener('click', function(){
+    
   });
 });

@@ -19,7 +19,7 @@ def main():
     return render_template('main.html', todos=todos, dones=dones)
 
 @app.route('/add',methods = ['GET'])
-def addTodo():
+def add():
     if request.method == 'GET':
         title = request.args.get('title', '')
         content = request.args.get('content', '')
@@ -96,8 +96,20 @@ def done(id):
 # @app.route('/edit/<int:id>')
 # def edit(id):
     
-# @app.route('/remove/<int:id>')
-# def remove(id):
+@app.route('/remove/<int:id>')
+def remove(id):
+    # update todo
+    with open('todo.json', 'r') as f:
+        infos = json.load(f)
+    target = infos[id]
+    del infos[id]
+    newTodos = []
+    for pos, info in enumerate(infos):
+        newInfo = {"id":pos, "title": info['title'], "content":  info['content'], "due_date": info['due_date']}
+        newTodos.append(newInfo)
+    with open('todo.json', 'w') as f: 
+        json.dump(newTodos, f)
+    return redirect(url_for('main'))
     
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
