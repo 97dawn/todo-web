@@ -1,0 +1,18 @@
+.main{
+    margin:auto;
+    width: 50%;
+    margin-top: 10rem;
+}
+img{
+    float: right;
+    cursor: pointer;
+}
+a{
+    display: content;
+}
+#remove_button{
+    background-color: #E57373;
+}
+#done_button{
+    background-color: #1b95e0;
+}

@@ -20,5 +20,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
               </div>';
                 let options = document.getElementById('options');
                 options.innerHTML += form;
+                document.getElementById('submit_button').addEventListener('click', function(){
+                  if (!document.getElementById('title').value | !document.getElementById('content').value){
+                    alert('모든 값을 입력해주세요');
+                  }
+                });
         });
 });

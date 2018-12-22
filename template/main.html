@@ -12,21 +12,32 @@
 <body>
         <div class="main">
                 <div id="options">
-                        <a class="waves-effect waves-light btn" id="add_button">추가</a>
+                        <a class="waves-effect waves-light btn" id="add_button">할 일 추가</a>
                 </div>
+
                 <div id="todos">
+                        <span>Todo</span>
                         <ul class="collection">
                                 {% for info in infos %}
                                         <li class="collection-item">
-                                                <span style="font-weight:bold;" class="title">{{info['title']}}</span>
-                                                <p>{{info['content']}}</p>
+                                                <span style="font-weight:bold;" class="title">{{info['title']}}
+                                                        <a href="/up/{{info['id']}}"><img alt="우선순위 올림"src="../static/img/up.png"/></a>
+                                                </span>
+                                                <p>{{info['content']}}
+                                                        <a href="/down/{{info['id']}}"><img alt="우선순위 올림" src="../static/img/down.png"/></a>
+                                                </p>
                                                 {% if info['due_date'] %}
-                                                        <p>info['due_date'] 까지</p>
+                                                        <p>info['due_date'] 마감</p>
                                                 {% endif%}
-                                                <a class="waves-effect waves-light btn" id="finish_button">완료</a>
+                                                <a class="waves-effect waves-light btn" href="/done/{{info['id']}}" id="done_button">완료</a>
+                                                <a class="waves-effect waves-light btn" href="/edit/{{info['id']}}" id="edit_button">수정</a>
+                                                <a class="waves-effect waves-light btn" href="/remove/{{info['id']}}" id="remove_button">삭제</a>
                                         </li>
                                 {% endfor %}
                         </ul>
+                </div>
+                <div id="dones">
+                        <span>Done</span>
                 </div>
         </div>
         <script type="text/javascript" src="../static/js/materialize.min.js"></script>
