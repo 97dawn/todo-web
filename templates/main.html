@@ -18,7 +18,7 @@
                 <div class="list" id="todos">
                         <span>Todo</span>
                         <ul class="collection">
-                                {% for info in infos %}
+                                {% for info in todos %}
                                         <li class="collection-item">
                                                 <span style="font-weight:bold;" class="title">{{info['title']}}
                                                         <a href="/up/{{info['id']}}"><img alt="우선순위 올림"src="../static/img/up.png"/></a>
@@ -38,6 +38,15 @@
                 </div>
                 <div class="list" id="dones">
                         <span>Done</span>
+                        <ul class="collection">
+                                {% for info in dones %}
+                                        <li class="collection-item">
+                                                <span style="font-weight:bold;" class="title">{{info['title']}}</span>
+                                                <p>{{info['content']}}</p>
+                                                <p>{{info['due_date']}} 완료</p>
+                                        </li>
+                                {% endfor %}
+                        </ul>
                 </div>
         </div>
         <script type="text/javascript" src="../static/js/materialize.min.js"></script>
