@@ -13,6 +13,35 @@
         <div class="main">
                 <div id="options">
                         <a class="waves-effect waves-light btn" id="add_button">할 일 추가</a>
+                        {% if edit %}
+                                <div class="row">
+                                        <form class="col s12" action="/modify/{{info['id']}}" method = "get">
+                                                <div class="row">
+                                                        <div class="input-field col s12">
+                                                                <textarea name="title" id="title" class="materialize-textarea">{{info['title']}}</textarea>
+                                                                <label for="title">제목</label>
+                                                        </div>
+                                                </div>
+                                                <div class="row">
+                                                        <div class="input-field col s12">
+                                                                <textarea name="content" id="content" class="materialize-textarea">{{info['content']}}</textarea>
+                                                                <label for="content">내용</label>
+                                                        </div>
+                                                </div>
+                                                <div class="row">
+                                                        <div class="input-field col s12">
+                                                                {% if info['due_date'] == None %}
+                                                                        <input type="text" class="datepicker" name="due_date">
+                                                                {% else %}
+                                                                        <input type="text" class="datepicker" name="due_date" value="{{info['due_date']}}">
+                                                                {% endif %}
+                                                                <label for="content">마감 시간</label>
+                                                        </div>
+                                                </div>
+                                                <input type = "submit" class="waves-effect waves-light btn" id="submit_button" value="변경"/>
+                                        </form>
+                                </div>
+                        {% endif %}
                 </div>
 
                 <div class="list" id="todos">
@@ -27,7 +56,7 @@
                                                         <a href="/down/{{info['id']}}"><img alt="우선순위 올림" src="../static/img/down.png"/></a>
                                                 </p>
                                                 {% if info['due_date'] %}
-                                                        <p>info['due_date'] 마감</p>
+                                                        <p>{{info['due_date']}} 마감</p>
                                                 {% endif%}
                                                 <a class="waves-effect waves-light btn" href="/done/{{info['id']}}" id="done_button">완료</a>
                                                 <a class="waves-effect waves-light btn" href="/edit/{{info['id']}}" id="edit_button">수정</a>

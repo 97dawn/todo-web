@@ -18,16 +18,15 @@ let form = '<div class="row">\
 document.addEventListener("DOMContentLoaded", function(event) {
   let addButton = document.getElementById('add_button');
   let editButton = document.getElementById('edit_button');
+  let options = document.getElementById('options');
+  var elems = document.querySelectorAll('.datepicker');
+  var instances = M.Datepicker.init(elems, options);
   addButton.addEventListener('click', function(){
-    let options = document.getElementById('options');
     options.innerHTML += form;
     document.getElementById('submit_button').addEventListener('click', function(){
       if (!document.getElementById('title').value | !document.getElementById('content').value){
         alert('모든 값을 입력해주세요');
       }
     });
-  });
-  editButton.addEventListener('click', function(){
-    
   });
 });

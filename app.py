@@ -4,6 +4,13 @@ import sys, json, os, pytz, pygeoip
 
 app = Flask(__name__) 
 
+def getLists():
+    with open('todo.json', 'r') as f:
+        todos = json.load(f)
+    with open('done.json', 'r') as f:
+        dones = json.load(f)
+    return todos, dones
+
 @app.route('/')
 def main():
     if 'todo.json' not in os.listdir():
@@ -12,11 +19,8 @@ def main():
     if 'done.json' not in os.listdir():
         with open('done.json', 'w') as f:
             json.dump([],f)
-    with open('todo.json', 'r') as f:
-        todos = json.load(f)
-    with open('done.json', 'r') as f:
-        dones = json.load(f)
-    return render_template('main.html', todos=todos, dones=dones)
+    todos, dones = getLists()
+    return render_template('main.html', todos=todos, dones=dones, mode=0)
 
 @app.route('/add',methods = ['GET'])
 def add():
@@ -93,8 +97,36 @@ def done(id):
     return redirect(url_for('main'))
 
 
-# @app.route('/edit/<int:id>')
-# def edit(id):
+@app.route('/edit/<int:id>')
+def edit(id):
+    with open('todo.json', 'r') as f:
+        infos = json.load(f)
+    info = infos[id]
+    todos, dones = getLists()
+    return render_template('main.html', todos=todos, dones=dones, edit=True, info=info)
+
+def convertDate(eng):
+    month = eng[0:3]
+    day = eng[4:6]
+    year = eng[8:]
+    months = {'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06','Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}
+    return year+'-'+months[month]+'-'+day
+
+@app.route('/modify/<int:id>', methods=['GET'])
+def modify(id):
+    if request.method == 'GET':
+        title = request.args.get('title','')
+        content = request.args.get('content','')
+        due_date = request.args.get('due_date','')
+        due_date = convertDate(due_date)
+        with open('todo.json', 'r') as f:
+            infos = json.load(f)
+        infos[id] = {'id':id, "title":title, "content":content, "due_date":due_date}
+        with open('todo.json', 'w') as f: 
+            json.dump(infos, f)
+        return redirect(url_for('main'))
+        
+
     
 @app.route('/remove/<int:id>')
 def remove(id):
