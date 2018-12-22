@@ -56,7 +56,14 @@ def down(id):
             json.dump(infos, f)
     return redirect(url_for('main'))
 
+@app.route('/done/<int:id>')
+def done(id):
 
+@app.route('/edit/<int:id>')
+def edit(id):
+    
+@app.route('/remove/<int:id>')
+def remove(id):
     
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
