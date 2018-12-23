@@ -37,7 +37,10 @@ def reboot():
     todos, dones = getLists()
     gi = pygeoip.GeoIP('GeoLiteCity.dat')
     data = gi.record_by_addr(request.remote_addr)
-    local_time = pytz.timezone(data['time_zone'])
+    try:
+        local_time = pytz.timezone(data['time_zone'])
+    except Exception:
+        local_time = pytz.timezone('Asia/Seoul')
     time = datetime.utcnow().replace(microsecond=0).replace(tzinfo=pytz.utc)
     time = time.astimezone(local_time)
     time = datetime.strptime(time.strftime('%Y-%m-%d %H:%M:%S'),'%Y-%m-%d %H:%M:%S')
