@@ -8,11 +8,15 @@ gi = pygeoip.GeoIP('GeoLiteCity.dat')
 def getLists():
     todoFileName = request.remote_addr+'_todo.json'
     doneFileName = request.remote_addr+'_done.json'
-    if todoFileName in os.listdir():
-        
-    with open('todo.json', 'r') as f:
+    if todoFileName not in os.listdir():
+        with open(todoFileName, 'w') as f: 
+            json.dump([], f)
+    if doneFileName not in os.listdir():
+        with open(doneFileName, 'w') as f: 
+            json.dump([], f)
+    with open(todoFileName, 'r') as f:
         todos = json.load(f)
-    with open('done.json', 'r') as f:
+    with open(doneFileName, 'r') as f:
         dones = json.load(f)
     return todos, dones
 
@@ -40,20 +44,22 @@ def main():
 @app.route('/add',methods = ['GET'])
 def add():
     if request.method == 'GET':
+        todoFileName = request.remote_addr+'_todo.json'
         title = request.args.get('title', '')
         content = request.args.get('content', '')
         if title and content:
-            with open('todo.json', 'r') as f:
+            with open(todoFileName, 'r') as f:
                 infos = json.load(f)
                 info = {"id":len(infos), "title": title, "content": content, "due_date":None}
                 infos.append(info)
-            with open('todo.json', 'w') as f: 
+            with open(todoFileName, 'w') as f: 
                 json.dump(infos, f)
         return redirect(url_for('main'))
     
 @app.route('/up/<int:id>')
 def up(id):
-    with open('todo.json', 'r') as f:
+    todoFileName = request.remote_addr+'_todo.json'
+    with open(todoFileName, 'r') as f:
         infos = json.load(f)
     target = infos[id]
     if id != 0:
@@ -63,13 +69,14 @@ def up(id):
         target['id'] = id-1
         infos[id] = prevOne
         infos[id-1] = target
-        with open('todo.json', 'w') as f: 
+        with open(todoFileName, 'w') as f: 
             json.dump(infos, f)
     return redirect(url_for('main'))
 
 @app.route('/down/<int:id>')
 def down(id):
-    with open('todo.json', 'r') as f:
+    todoFileName = request.remote_addr+'_todo.json'
+    with open(todoFileName, 'r') as f:
         infos = json.load(f)
     lastNo = len(infos)-1
     target = infos[id]
@@ -80,14 +87,16 @@ def down(id):
         target['id'] = id+1
         infos[id] = nextOne
         infos[id+1] = target
-        with open('todo.json', 'w') as f: 
+        with open(todoFileName, 'w') as f: 
             json.dump(infos, f)
     return redirect(url_for('main'))
 
 @app.route('/done/<int:id>')
 def done(id):
+    todoFileName = request.remote_addr+'_todo.json'
+    doneFileName = request.remote_addr+'_done.json'
     # update todo
-    with open('todo.json', 'r') as f:
+    with open(todoFileName, 'r') as f:
         infos = json.load(f)
     target = infos[id]
     del infos[id]
@@ -95,7 +104,7 @@ def done(id):
     for pos, info in enumerate(infos):
         newInfo = {"id":pos, "title": info['title'], "content":  info['content'], "due_date": info['due_date']}
         newTodos.append(newInfo)
-    with open('todo.json', 'w') as f: 
+    with open(todoFileName, 'w') as f: 
         json.dump(newTodos, f)
     # update done
     global gi
@@ -103,18 +112,19 @@ def done(id):
     local_time = pytz.timezone(data['time_zone'])
     time = datetime.utcnow().replace(microsecond=0).replace(tzinfo=pytz.utc)
     time = time.astimezone(local_time)
-    with open('done.json', 'r') as f:
+    with open(doneFileName, 'r') as f:
         infos = json.load(f)
     info = {"id":len(infos), "title": target['title'], "content":  target['content'], "due_date": time.strftime('%Y-%m-%d %H:%M:%S')}
     infos.append(info)
-    with open('done.json', 'w') as f: 
+    with open(doneFileName, 'w') as f: 
         json.dump(infos, f)
     return redirect(url_for('main'))
 
 
 @app.route('/edit/<int:id>')
 def edit(id):
-    with open('todo.json', 'r') as f:
+    todoFileName = request.remote_addr+'_todo.json'
+    with open(todoFileName, 'r') as f:
         infos = json.load(f)
     info = infos[id]
     todos, dones = getLists()
@@ -130,6 +140,7 @@ def convertDate(eng):
 @app.route('/modify/<int:id>', methods=['GET'])
 def modify(id):
     if request.method == 'GET':
+        todoFileName = request.remote_addr+'_todo.json'
         title = request.args.get('title','')
         content = request.args.get('content','')
         due_date = request.args.get('due_date','')
@@ -137,17 +148,18 @@ def modify(id):
             due_date = convertDate(due_date)
         except Exception:
             due_date = None
-        with open('todo.json', 'r') as f:
+        with open(todoFileName, 'r') as f:
             infos = json.load(f)
         infos[id] = {'id':id, "title":title, "content":content, "due_date":due_date}
-        with open('todo.json', 'w') as f: 
+        with open(todoFileName, 'w') as f: 
             json.dump(infos, f)
         return redirect(url_for('main'))
     
 @app.route('/remove/<int:id>')
 def remove(id):
     # update todo
-    with open('todo.json', 'r') as f:
+    todoFileName = request.remote_addr+'_todo.json'
+    with open(todoFileName, 'r') as f:
         infos = json.load(f)
     target = infos[id]
     del infos[id]
@@ -155,7 +167,7 @@ def remove(id):
     for pos, info in enumerate(infos):
         newInfo = {"id":pos, "title": info['title'], "content":  info['content'], "due_date": info['due_date']}
         newTodos.append(newInfo)
-    with open('todo.json', 'w') as f: 
+    with open(todoFileName, 'w') as f: 
         json.dump(newTodos, f)
     return redirect(url_for('main'))
     
