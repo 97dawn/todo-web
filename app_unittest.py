@@ -1,7 +1,9 @@
 #-*- coding: utf-8 -*-
 from app import app
 import unittest
-
+'''
+Each unittest should be executed one by one
+'''
 class FlaskTestCase(unittest.TestCase):
     def test_index(self):
         tester = app.test_client(self)
