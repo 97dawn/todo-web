@@ -40,11 +40,7 @@
                                                 </div>
                                                 <div class="row">
                                                         <div class="input-field col s12">
-                                                                {% if info['due_date'] == None %}
-                                                                        <input type="text" class="datepicker" name="due_date">
-                                                                {% else %}
-                                                                        <input type="text" class="datepicker" name="due_date" value="{{info['due_date']}}">
-                                                                {% endif %}
+                                                                <input type="text" onkeypress="keypress(event)" class="datepicker" name="due_date" value="{{info['due_date']}}">
                                                                 <label for="content">마감 시간</label>
                                                         </div>
                                                 </div>

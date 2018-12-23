@@ -33,3 +33,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 function removeAlert(close){
   close.parentNode.parentNode.removeChild(close.parentNode);
 }
+function keypress(e){
+  e.preventDefault();
+}

@@ -20,6 +20,19 @@ def getLists():
         dones = json.load(f)
     return todos, dones
 
+def convertStringtoDate(eng):
+    month = eng[0:3]
+    day = eng[4:6]
+    year = eng[8:]
+    months = {'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06','Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}
+    return year+'-'+months[month]+'-'+day
+
+def convertDatetostring(d):
+    d = d.split('-')
+    year, month, day = d[0], d[1], d[2]
+    months = {'01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec'}
+    return months[month]+' '+day+', '+year
+
 @app.route('/')
 def main():
     todos, dones = getLists()
@@ -120,22 +133,18 @@ def done(id):
         json.dump(infos, f)
     return redirect(url_for('main'))
 
-
 @app.route('/edit/<int:id>')
 def edit(id):
     todoFileName = request.remote_addr+'_todo.json'
     with open(todoFileName, 'r') as f:
         infos = json.load(f)
     info = infos[id]
+    if info['due_date'] is not None:
+        info['due_date'] = convertDatetostring(info['due_date'])
+    else:
+        info['due_date'] = ''
     todos, dones = getLists()
     return render_template('main.html', todos=todos, dones=dones, edit=True, info=info)
-
-def convertDate(eng):
-    month = eng[0:3]
-    day = eng[4:6]
-    year = eng[8:]
-    months = {'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06','Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}
-    return year+'-'+months[month]+'-'+day
 
 @app.route('/modify/<int:id>', methods=['GET'])
 def modify(id):
@@ -144,12 +153,12 @@ def modify(id):
         title = request.args.get('title','')
         content = request.args.get('content','')
         due_date = request.args.get('due_date','')
-        try:
-            due_date = convertDate(due_date)
-        except Exception:
-            due_date = None
         with open(todoFileName, 'r') as f:
             infos = json.load(f)
+        try:
+            due_date = convertStringtoDate(due_date)
+        except Exception:
+            due_date = infos[id]["due_date"]
         infos[id] = {'id':id, "title":title, "content":content, "due_date":due_date}
         with open(todoFileName, 'w') as f: 
             json.dump(infos, f)
