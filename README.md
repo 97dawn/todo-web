@@ -41,7 +41,7 @@ vim /etc/nginx/sites-available/default
 
 server{
     listen 5000;
-    server_name ec2-13-209-6-162.ap-northeast-2.compute.amazonaws.com;
+    server_name 172.31.21.107;
     location /{
         include uwsgi_params;
         uwsgi_pass unix:/home/ubuntu/todo.sock;
@@ -51,6 +51,3 @@ server{
 
 service nginx start
 ```
-
-# URL
-http://ec2-13-209-6-162.ap-northeast-2.compute.amazonaws.com:5000/
