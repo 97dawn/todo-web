@@ -3,7 +3,7 @@ from datetime import datetime
 import sys, json, os, pytz, pygeoip,traceback
 
 app = Flask(__name__) 
-gi = pygeoip.GeoIP('GeoLiteCity.dat')
+
 
 def getLists():
     todoFileName = request.remote_addr+'_todo.json'
@@ -33,10 +33,9 @@ def convertDatetostring(d):
     months = {'01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec'}
     return months[month]+' '+day+', '+year
 
-@app.route('/')
-def main():
+def reboot():
     todos, dones = getLists()
-    global gi
+    gi = pygeoip.GeoIP('GeoLiteCity.dat')
     data = gi.record_by_addr(request.remote_addr)
     local_time = pytz.timezone(data['time_zone'])
     time = datetime.utcnow().replace(microsecond=0).replace(tzinfo=pytz.utc)
@@ -54,6 +53,10 @@ def main():
     else:
         return render_template('main.html', todos=todos, dones=dones, edit=False)
 
+@app.route('/')
+def main():
+    return reboot()
+
 @app.route('/add',methods = ['GET'])
 def add():
     if request.method == 'GET':
@@ -67,7 +70,7 @@ def add():
                 infos.append(info)
             with open(todoFileName, 'w') as f: 
                 json.dump(infos, f)
-        return redirect(url_for('main'))
+        return reboot()
     
 @app.route('/up/<int:id>')
 def up(id):
@@ -84,7 +87,8 @@ def up(id):
         infos[id-1] = target
         with open(todoFileName, 'w') as f: 
             json.dump(infos, f)
-    return redirect(url_for('main'))
+    todos, dones = getLists()
+    return render_template('main.html', todos=todos, dones=dones, edit=False)
 
 @app.route('/down/<int:id>')
 def down(id):
@@ -102,7 +106,8 @@ def down(id):
         infos[id+1] = target
         with open(todoFileName, 'w') as f: 
             json.dump(infos, f)
-    return redirect(url_for('main'))
+    todos, dones = getLists()
+    return render_template('main.html', todos=todos, dones=dones, edit=False)
 
 @app.route('/done/<int:id>')
 def done(id):
@@ -120,7 +125,7 @@ def done(id):
     with open(todoFileName, 'w') as f: 
         json.dump(newTodos, f)
     # update done
-    global gi
+    gi = pygeoip.GeoIP('GeoLiteCity.dat')
     data = gi.record_by_addr(request.remote_addr)
     local_time = pytz.timezone(data['time_zone'])
     time = datetime.utcnow().replace(microsecond=0).replace(tzinfo=pytz.utc)
@@ -131,7 +136,7 @@ def done(id):
     infos.append(info)
     with open(doneFileName, 'w') as f: 
         json.dump(infos, f)
-    return redirect(url_for('main'))
+    return reboot()
 
 @app.route('/edit/<int:id>')
 def edit(id):
@@ -162,7 +167,7 @@ def modify(id):
         infos[id] = {'id':id, "title":title, "content":content, "due_date":due_date}
         with open(todoFileName, 'w') as f: 
             json.dump(infos, f)
-        return redirect(url_for('main'))
+        return reboot()
     
 @app.route('/remove/<int:id>')
 def remove(id):
@@ -178,7 +183,7 @@ def remove(id):
         newTodos.append(newInfo)
     with open(todoFileName, 'w') as f: 
         json.dump(newTodos, f)
-    return redirect(url_for('main'))
+    return reboot()
     
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
