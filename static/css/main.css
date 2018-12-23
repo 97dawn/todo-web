@@ -20,6 +20,9 @@ a{
 #add_button, #cancel_button{
     margin-bottom: 1rem;
 }
+#submit_button{
+    outline:none;
+}
 .list{
     margin-top: 5rem;
 }

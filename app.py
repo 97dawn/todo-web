@@ -47,7 +47,7 @@ def reboot():
     alerts = []
     for todo in todos:
         try:
-            if datetime.strptime(todo['due_date'],'%Y-%m-%d') < time:
+            if datetime.strptime(todo['due_date']+' 23:59:59','%Y-%m-%d %H:%M:%S') < time:
                 alerts.append(todo['title'])
         except Exception:
             pass
