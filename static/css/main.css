@@ -17,6 +17,9 @@ a{
 #done_button{
     background-color: #1b95e0;
 }
+#add_button, #cancel_button{
+    margin-bottom: 1rem;
+}
 .list{
     margin-top: 5rem;
 }

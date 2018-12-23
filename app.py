@@ -3,17 +3,13 @@ from datetime import datetime
 import sys, json, os, pytz, pygeoip,traceback
 
 app = Flask(__name__) 
-
-if 'todo.json' not in os.listdir():
-    with open('todo.json', 'w') as f:
-        json.dump([],f)
-if 'done.json' not in os.listdir():
-    with open('done.json', 'w') as f:
-        json.dump([],f)
-
 gi = pygeoip.GeoIP('GeoLiteCity.dat')
 
 def getLists():
+    todoFileName = request.remote_addr+'_todo.json'
+    doneFileName = request.remote_addr+'_done.json'
+    if todoFileName in os.listdir():
+        
     with open('todo.json', 'r') as f:
         todos = json.load(f)
     with open('done.json', 'r') as f:
@@ -32,7 +28,7 @@ def main():
     alerts = []
     for todo in todos:
         try:
-            if datetime.strptime(todo['due_date'],'%Y-%m-%d') <= time:
+            if datetime.strptime(todo['due_date'],'%Y-%m-%d') < time:
                 alerts.append(todo['title'])
         except Exception:
             pass
