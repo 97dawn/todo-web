@@ -50,10 +50,10 @@
                                 {% for info in todos %}
                                         <li class="collection-item">
                                                 <span style="font-weight:bold;" class="title">{{info['title']}}
-                                                        <a href="/up/{{info['id']}}"><img alt="우선순위 올림"src="../static/img/up.png"/></a>
+                                                        <a href="/up/{{info['id']}}" title="우선순위 올림"><img alt="우선순위 올림" src="../static/img/up.png"/></a>
                                                 </span>
                                                 <p>{{info['content']}}
-                                                        <a href="/down/{{info['id']}}"><img alt="우선순위 올림" src="../static/img/down.png"/></a>
+                                                        <a href="/down/{{info['id']}}" title="우선순위 내림"><img alt="우선순위 내림" src="../static/img/down.png"/></a>
                                                 </p>
                                                 {% if info['due_date'] %}
                                                         <p>{{info['due_date']}} 마감</p>
