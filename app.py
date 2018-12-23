@@ -51,11 +51,9 @@ def reboot():
                 alerts.append(todo['title'])
         except Exception:
             pass
-    if alerts:
-        return render_template('main.html', todos=todos, dones=dones, edit=False, alerts=alerts)
-    else:
-        return render_template('main.html', todos=todos, dones=dones, edit=False)
-
+    alerts.sort()
+    return render_template('main.html', todos=todos, dones=dones, edit=False, alerts=alerts)
+    
 @app.route('/')
 def main():
     return reboot()
@@ -90,8 +88,7 @@ def up(id):
         infos[id-1] = target
         with open(todoFileName, 'w') as f: 
             json.dump(infos, f)
-    todos, dones = getLists()
-    return render_template('main.html', todos=todos, dones=dones, edit=False)
+    return reboot()
 
 @app.route('/down/<int:id>')
 def down(id):
@@ -109,8 +106,7 @@ def down(id):
         infos[id+1] = target
         with open(todoFileName, 'w') as f: 
             json.dump(infos, f)
-    todos, dones = getLists()
-    return render_template('main.html', todos=todos, dones=dones, edit=False)
+    return reboot()
 
 @app.route('/done/<int:id>')
 def done(id):
