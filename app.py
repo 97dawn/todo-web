@@ -8,12 +8,14 @@ app = Flask(__name__)
 def getLists():
     todoFileName = request.remote_addr+'_todo.json'
     doneFileName = request.remote_addr+'_done.json'
+    # check files exist
     if todoFileName not in os.listdir():
         with open(todoFileName, 'w') as f: 
             json.dump([], f)
     if doneFileName not in os.listdir():
         with open(doneFileName, 'w') as f: 
             json.dump([], f)
+    # get lists
     with open(todoFileName, 'r') as f:
         todos = json.load(f)
     with open(doneFileName, 'r') as f:
@@ -27,7 +29,7 @@ def convertStringtoDate(eng):
     months = {'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06','Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}
     return year+'-'+months[month]+'-'+day
 
-def convertDatetostring(d):
+def convertDatetoString(d):
     d = d.split('-')
     year, month, day = d[0], d[1], d[2]
     months = {'01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec'}
@@ -35,6 +37,7 @@ def convertDatetostring(d):
 
 def reboot():
     todos, dones = getLists()
+    # get client's time
     gi = pygeoip.GeoIP('GeoLiteCity.dat')
     data = gi.record_by_addr(request.remote_addr)
     try:
@@ -44,6 +47,7 @@ def reboot():
     time = datetime.utcnow().replace(microsecond=0).replace(tzinfo=pytz.utc)
     time = time.astimezone(local_time)
     time = datetime.strptime(time.strftime('%Y-%m-%d %H:%M:%S'),'%Y-%m-%d %H:%M:%S')
+    # get expired Todos
     alerts = []
     for todo in todos:
         try:
@@ -65,10 +69,12 @@ def add():
         title = request.args.get('title', '')
         content = request.args.get('content', '')
         if title and content:
+            # put new Todo at the end of list
             with open(todoFileName, 'r') as f:
                 infos = json.load(f)
                 info = {"id":len(infos), "title": title, "content": content, "due_date":None}
                 infos.append(info)
+            # save list of Todos with new Todo
             with open(todoFileName, 'w') as f: 
                 json.dump(infos, f)
         return reboot()
@@ -76,6 +82,7 @@ def add():
 @app.route('/up/<int:id>')
 def up(id):
     todoFileName = request.remote_addr+'_todo.json'
+    # get target Todo
     with open(todoFileName, 'r') as f:
         infos = json.load(f)
     target = infos[id]
@@ -93,6 +100,7 @@ def up(id):
 @app.route('/down/<int:id>')
 def down(id):
     todoFileName = request.remote_addr+'_todo.json'
+    # get target Todo
     with open(todoFileName, 'r') as f:
         infos = json.load(f)
     lastNo = len(infos)-1
@@ -112,18 +120,21 @@ def down(id):
 def done(id):
     todoFileName = request.remote_addr+'_todo.json'
     doneFileName = request.remote_addr+'_done.json'
-    # update todo
+    # get target Todo
     with open(todoFileName, 'r') as f:
         infos = json.load(f)
     target = infos[id]
+    # remove target Todo
     del infos[id]
+    # reorder Todos
     newTodos = []
     for pos, info in enumerate(infos):
         newInfo = {"id":pos, "title": info['title'], "content":  info['content'], "due_date": info['due_date']}
         newTodos.append(newInfo)
+    # update Todos
     with open(todoFileName, 'w') as f: 
         json.dump(newTodos, f)
-    # update done
+    # update done Todo with time
     gi = pygeoip.GeoIP('GeoLiteCity.dat')
     data = gi.record_by_addr(request.remote_addr)
     local_time = pytz.timezone(data['time_zone'])
@@ -140,11 +151,13 @@ def done(id):
 @app.route('/edit/<int:id>')
 def edit(id):
     todoFileName = request.remote_addr+'_todo.json'
+    # get target Todo
     with open(todoFileName, 'r') as f:
         infos = json.load(f)
     info = infos[id]
+    # convert due_date
     if info['due_date'] is not None:
-        info['due_date'] = convertDatetostring(info['due_date'])
+        info['due_date'] = convertDatetoString(info['due_date'])
     else:
         info['due_date'] = ''
     todos, dones = getLists()
@@ -157,12 +170,15 @@ def modify(id):
         title = request.args.get('title','')
         content = request.args.get('content','')
         due_date = request.args.get('due_date','')
+        # get Todos
         with open(todoFileName, 'r') as f:
             infos = json.load(f)
+        # convert due_date
         try:
             due_date = convertStringtoDate(due_date)
         except Exception:
             due_date = infos[id]["due_date"]
+        # update target Todo
         infos[id] = {'id':id, "title":title, "content":content, "due_date":due_date}
         with open(todoFileName, 'w') as f: 
             json.dump(infos, f)
@@ -170,16 +186,19 @@ def modify(id):
     
 @app.route('/remove/<int:id>')
 def remove(id):
-    # update todo
     todoFileName = request.remote_addr+'_todo.json'
+    # get target Todo
     with open(todoFileName, 'r') as f:
         infos = json.load(f)
     target = infos[id]
+    # remove target Todo
     del infos[id]
+    # reorder Todos
     newTodos = []
     for pos, info in enumerate(infos):
         newInfo = {"id":pos, "title": info['title'], "content":  info['content'], "due_date": info['due_date']}
         newTodos.append(newInfo)
+    # update Todos
     with open(todoFileName, 'w') as f: 
         json.dump(newTodos, f)
     return reboot()
