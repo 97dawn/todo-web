@@ -1,4 +1,4 @@
-let form = '<div class="row" style="margin-top:5rem;">\
+let form = '<div class="row" ">\
     <form class="col s12" action="/add" method = "get">\
       <div class="row">\
         <div class="input-field col s12">\
@@ -16,22 +16,20 @@ let form = '<div class="row" style="margin-top:5rem;">\
     </form>\
   </div>';
 document.addEventListener("DOMContentLoaded", function(event) {
-  let addButton = document.getElementById('add_button');
   let options = document.getElementById('options');
   var elems = document.querySelectorAll('.datepicker');
   var instances = M.Datepicker.init(elems, options);
-  addButton.addEventListener('click', function(){
+  document.getElementById('add_button').addEventListener('click', function(){
     options.innerHTML += form;
-    document.getElementById('add_button').disabled = false;
-    document.getElementById('add_button').innerText = '취소';
-    document.getElementById('add_button').id = 'cancel_button';  
+    document.getElementById('add_button').style.display = 'none';
+    document.getElementById('cancel_button').style.display = 'inline-block';
     document.getElementById('submit_button').addEventListener('click', function(){
       if (!document.getElementById('title').value | !document.getElementById('content').value){
         alert('모든 값을 입력해주세요');
       }
     });
-    document.getElementById('cancel_button').addEventListener('click', function(){
-      options.innerHTML = '<a class="waves-effect waves-light btn" id="add_button">할 일 추가</a>';
-    });
   });
 });
+function removeAlert(close){
+  close.parentNode.parentNode.removeChild(close.parentNode);
+}

@@ -4,15 +4,25 @@
         <meta charset="utf-8">
         <title>Todo</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!--Import Google Icon Font-->
-        <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
-        <!--Import materialize.css-->
+        <link rel="shortcut icon" type="image/png" href="../static/img/favicon.png"/>
         <link type="text/css" rel="stylesheet" href="../static/css/materialize.min.css"  media="screen,projection"/>
 </head>
 <body>
         <div class="main">
                 <div id="options">
-                        <a class="waves-effect waves-light btn" id="add_button">할 일 추가</a>
+                        {% for title in alerts %}
+                                <div class="alert">
+                                        <a onclick="removeAlert(this)">&times;</a>
+                                        마감 기한이 지났습니다 : {{title}}
+                                </div>
+                        {% endfor %}
+                        {% if edit %}
+                                <a href='/' class="waves-effect waves-light btn" id="cancel_button">취소</a>
+                                <a class="waves-effect waves-light btn" id="add_button" style="display: none">할 일 추가</a>
+                        {% else %}
+                                <a href='/' class="waves-effect waves-light btn" id="cancel_button" style="display:none;">취소</a>
+                                <a class="waves-effect waves-light btn" id="add_button">할 일 추가</a>
+                        {% endif %}
                         {% if edit %}
                                 <div class="row">
                                         <form class="col s12" action="/modify/{{info['id']}}" method = "get">
@@ -79,7 +89,7 @@
                 </div>
         </div>
         <script type="text/javascript" src="../static/js/materialize.min.js"></script>
-        <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
-        <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <link href="../static/css/main.css" rel="stylesheet">
+        <script type="text/javascript" src="../static/js/main.js"></script>
 </body>
 </html>

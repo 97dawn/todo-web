@@ -9,6 +9,7 @@ img{
 }
 a{
     display: content;
+    cursor: pointer;
 }
 #remove_button{
     background-color: #E57373;
@@ -18,4 +19,16 @@ a{
 }
 .list{
     margin-top: 5rem;
+}
+.waves-button-input{
+    cursor: pointer;
+    color: white;
+}
+.alert{
+    background-color: #f2dede;
+    border-color: #f2dede;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    color: #a94442;
+    padding: 0.5rem;
 }

@@ -1,8 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
-import sys, json, os, pytz, pygeoip
+import sys, json, os, pytz, pygeoip,traceback
 
 app = Flask(__name__) 
+
+if 'todo.json' not in os.listdir():
+    with open('todo.json', 'w') as f:
+        json.dump([],f)
+if 'done.json' not in os.listdir():
+    with open('done.json', 'w') as f:
+        json.dump([],f)
+
+gi = pygeoip.GeoIP('GeoLiteCity.dat')
 
 def getLists():
     with open('todo.json', 'r') as f:
@@ -13,14 +22,24 @@ def getLists():
 
 @app.route('/')
 def main():
-    if 'todo.json' not in os.listdir():
-        with open('todo.json', 'w') as f:
-            json.dump([],f)
-    if 'done.json' not in os.listdir():
-        with open('done.json', 'w') as f:
-            json.dump([],f)
     todos, dones = getLists()
-    return render_template('main.html', todos=todos, dones=dones, mode=0)
+    global gi
+    data = gi.record_by_addr(request.remote_addr)
+    local_time = pytz.timezone(data['time_zone'])
+    time = datetime.utcnow().replace(microsecond=0).replace(tzinfo=pytz.utc)
+    time = time.astimezone(local_time)
+    time = datetime.strptime(time.strftime('%Y-%m-%d %H:%M:%S'),'%Y-%m-%d %H:%M:%S')
+    alerts = []
+    for todo in todos:
+        try:
+            if datetime.strptime(todo['due_date'],'%Y-%m-%d') <= time:
+                alerts.append(todo['title'])
+        except Exception:
+            pass
+    if alerts:
+        return render_template('main.html', todos=todos, dones=dones, edit=False, alerts=alerts)
+    else:
+        return render_template('main.html', todos=todos, dones=dones, edit=False)
 
 @app.route('/add',methods = ['GET'])
 def add():
@@ -83,7 +102,7 @@ def done(id):
     with open('todo.json', 'w') as f: 
         json.dump(newTodos, f)
     # update done
-    gi = pygeoip.GeoIP('GeoLiteCity.dat')
+    global gi
     data = gi.record_by_addr(request.remote_addr)
     local_time = pytz.timezone(data['time_zone'])
     time = datetime.utcnow().replace(microsecond=0).replace(tzinfo=pytz.utc)
@@ -118,15 +137,16 @@ def modify(id):
         title = request.args.get('title','')
         content = request.args.get('content','')
         due_date = request.args.get('due_date','')
-        due_date = convertDate(due_date)
+        try:
+            due_date = convertDate(due_date)
+        except Exception:
+            due_date = None
         with open('todo.json', 'r') as f:
             infos = json.load(f)
         infos[id] = {'id':id, "title":title, "content":content, "due_date":due_date}
         with open('todo.json', 'w') as f: 
             json.dump(infos, f)
         return redirect(url_for('main'))
-        
-
     
 @app.route('/remove/<int:id>')
 def remove(id):
