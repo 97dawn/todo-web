@@ -58,3 +58,5 @@ server{
 
 2. service nginx start
 ```
+# Resource
+https://pythonhosted.org/pygeoip/pygeoip.const-pysrc.html
