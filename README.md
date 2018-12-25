@@ -11,8 +11,8 @@ app.py가 /home/todo 존재한다고 하자.
 
 ## Installation
 ```
-cd /home/todo
 sudo su
+cd /home/todo
 apt install python3
 apt install python3-pip
 pip3 install flask pytz pygeoip uwsgi
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
 server{
     listen 5000;
-    server_name 172.31.21.107;
+    server_name xxx.xxx.xxx.xxx; <- protected server ip
     location /{
         include uwsgi_params;
         uwsgi_pass unix:/home/todo/todo.sock;
