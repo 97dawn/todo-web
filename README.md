@@ -1,5 +1,3 @@
-# todo-web
-
 # Tech Stack
 python3 Flask, HTML, CSS, JS, Materialize(Framework), Nginx, uWSGI, AWS EC2, ubuntu
 
