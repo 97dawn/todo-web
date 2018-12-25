@@ -16,38 +16,52 @@
                                         마감 기한이 지났습니다 : {{title}}
                                 </div>
                         {% endfor %}
-                        {% if edit %}
+                        {% if mode%}
                                 <a href='/' class="waves-effect waves-light btn" id="cancel_button">취소</a>
-                                <a class="waves-effect waves-light btn" id="add_button" style="display: none">할 일 추가</a>
+                                <a href='/readyToAdd' class="waves-effect waves-light btn" id="add_button" style="display: none">할 일 추가</a>
                         {% else %}
                                 <a href='/' class="waves-effect waves-light btn" id="cancel_button" style="display:none;">취소</a>
-                                <a class="waves-effect waves-light btn" id="add_button">할 일 추가</a>
+                                <a href='/readyToAdd' class="waves-effect waves-light btn" id="add_button">할 일 추가</a>
                         {% endif %}
-                        {% if edit %}
-                                <div class="row">
-                                        <form class="col s12" action="/modify/{{info['id']}}" method = "get">
-                                                <div class="row">
-                                                        <div class="input-field col s12">
-                                                                <textarea name="title" id="title" class="materialize-textarea">{{info['title']}}</textarea>
-                                                                <label for="title">제목</label>
-                                                        </div>
+                        {% if makeForm %}
+                        <div class="row">
+                                {% if mode == 1 %}
+                                <form class="col s12" action="/modify/{{info['id']}}" method = "get">
+                                {% else %}
+                                <form class="col s12" action="/add" method = "get">
+                                {% endif %}
+                                        <div class="row">
+                                                <div class="input-field col s12">
+                                                        {% if mode == 1 %}
+                                                        <textarea name="title" id="title" class="materialize-textarea">{{info['title']}}</textarea>
+                                                        {% else %}
+                                                        <textarea name="title" id="title" class="materialize-textarea"></textarea>
+                                                        {% endif %}
+                                                        <label for="title">제목</label>
                                                 </div>
-                                                <div class="row">
-                                                        <div class="input-field col s12">
-                                                                <textarea name="content" id="content" class="materialize-textarea">{{info['content']}}</textarea>
-                                                                <label for="content">내용</label>
-                                                        </div>
+                                        </div>
+                                        <div class="row">
+                                                <div class="input-field col s12">
+                                                        {% if mode == 1%}
+                                                        <textarea name="content" id="content" class="materialize-textarea">{{info['content']}}</textarea>
+                                                        {% else %}
+                                                        <textarea name="content" id="content" class="materialize-textarea"></textarea>
+                                                        {% endif %}
+                                                        <label for="content">내용</label>
                                                 </div>
-                                                <div class="row">
-                                                        <div class="input-field col s12">
-                                                                <input type="text" onkeypress="keypress(event)" class="datepicker" name="due_date" value="{{info['due_date']}}">
-                                                                <label for="content">마감 시간</label>
-                                                        </div>
+                                        </div>
+                                        {% if mode == 1 %}
+                                        <div class="row">
+                                                <div class="input-field col s12">
+                                                        <input type="text" onkeypress="keypress(event)" class="datepicker" name="due_date" value="{{info['due_date']}}">
+                                                        <label for="content">마감 시간</label>
                                                 </div>
-                                                <input type = "submit" class="waves-effect waves-light btn" id="submit_button" value="변경"/>
-                                        </form>
-                                </div>
-                        {% endif %}
+                                        </div>
+                                        {% endif %}
+                                        <input type = "submit" class="waves-effect waves-light btn" id="submit_button" value="제출"/>
+                                </form>
+                        </div>         
+                        {% endif %}              
                 </div>
 
                 <div class="list" id="todos">
