@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
 server{
     listen 5000;
-    server_name 172.31.21.107;
+    server_name xxx.xxx.xxx.xxx; <- protected server ip
     location /{
         include uwsgi_params;
         uwsgi_pass unix:/home/todo/todo.sock;
