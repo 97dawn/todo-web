@@ -36,6 +36,7 @@ def reboot(ip):
     # get client's time
     gi = pygeoip.GeoIP('GeoLiteCity.dat')
     data = gi.record_by_addr(ip)
+    texts = getTextsByLang(data['time_zone'])
     try:
         local_time = pytz.timezone(data['time_zone'])
     except Exception:
@@ -52,4 +53,10 @@ def reboot(ip):
         except Exception:
             pass
     alerts.sort()
-    return render_template('main.html', todos=todos, dones=dones, mode=0, alerts=alerts)
+    return render_template('main.html', todos=todos, dones=dones, mode=0, alerts=alerts, texts=texts)
+
+def getTextsByLang(timezone):
+    if timezone == 'Asia/Seoul':
+        return ["마감 기한이 지났습니다", "취소","할 일 추가","제목","내용","마감일","제출","할 일","우선순위 올림","우선순위 내림","완료","수정","삭제","완료한 일"]
+    else:
+        return ["Expired","Cancel","Add Todo","Title","Content","Deadline","Submit","Todo","Increase Priority","Decrease Priority","Complete","Edit","Remove","Completed Todo"]

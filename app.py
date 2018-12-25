@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request
 from datetime import datetime
 import json, os, pytz, pygeoip,traceback
-from lib import reboot, getLists, convertStringtoDate, convertDatetoString
+from lib import reboot, getLists, convertStringtoDate, convertDatetoString, getTextsByLang
 
 app = Flask(__name__) 
+gi = pygeoip.GeoIP('GeoLiteCity.dat')
 # mode: 0 -> nothing, 1 -> edit, 2 -> add
  
 @app.route('/')
@@ -87,7 +88,7 @@ def done(id):
     with open(todoFileName, 'w') as f: 
         json.dump(newTodos, f)
     # update done Todo with time
-    gi = pygeoip.GeoIP('GeoLiteCity.dat')
+    global gi
     data = gi.record_by_addr(request.remote_addr)
     local_time = pytz.timezone(data['time_zone'])
     time = datetime.utcnow().replace(microsecond=0).replace(tzinfo=pytz.utc)
@@ -104,7 +105,10 @@ def done(id):
 def readyToAdd():
     ip = request.remote_addr
     todos, dones = getLists(ip)
-    return render_template('main.html', todos=todos, dones=dones, mode=2, makeForm=True)
+    global gi
+    data = gi.record_by_addr(ip)
+    texts = getTextsByLang(data['time_zone'])
+    return render_template('main.html', todos=todos, dones=dones, mode=2, makeForm=True, texts=texts)
 
 @app.route('/edit/<int:id>')
 def edit(id):
@@ -120,7 +124,10 @@ def edit(id):
     else:
         info['due_date'] = ''
     todos, dones = getLists(ip)
-    return render_template('main.html', todos=todos, dones=dones, mode=1, makeForm=True, info=info)
+    global gi
+    data = gi.record_by_addr(ip)
+    texts = getTextsByLang(data['time_zone'])
+    return render_template('main.html', todos=todos, dones=dones, mode=1, makeForm=True, info=info, texts=texts)
 
 @app.route('/modify/<int:id>', methods=['GET'])
 def modify(id):

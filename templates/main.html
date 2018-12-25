@@ -13,15 +13,15 @@
                         {% for title in alerts %}
                                 <div class="alert">
                                         <a onclick="removeAlert(this)">&times;</a>
-                                        마감 기한이 지났습니다 : {{title}}
+                                        {{texts[0]}} : {{title}}
                                 </div>
                         {% endfor %}
                         {% if mode%}
-                                <a href='/' class="waves-effect waves-light btn" id="cancel_button">취소</a>
-                                <a href='/readyToAdd' class="waves-effect waves-light btn" id="add_button" style="display: none">할 일 추가</a>
+                                <a href='/' class="waves-effect waves-light btn" id="cancel_button">{{texts[1]}}</a>
+                                <a href='/readyToAdd' class="waves-effect waves-light btn" id="add_button" style="display: none">{{texts[2]}}</a>
                         {% else %}
-                                <a href='/' class="waves-effect waves-light btn" id="cancel_button" style="display:none;">취소</a>
-                                <a href='/readyToAdd' class="waves-effect waves-light btn" id="add_button">할 일 추가</a>
+                                <a href='/' class="waves-effect waves-light btn" id="cancel_button" style="display:none;">{{texts[1]}}</a>
+                                <a href='/readyToAdd' class="waves-effect waves-light btn" id="add_button">{{texts[2]}}</a>
                         {% endif %}
                         {% if makeForm %}
                         <div class="row">
@@ -37,7 +37,7 @@
                                                         {% else %}
                                                         <textarea name="title" id="title" class="materialize-textarea"></textarea>
                                                         {% endif %}
-                                                        <label for="title">제목</label>
+                                                        <label for="title">{{texts[3]}}</label>
                                                 </div>
                                         </div>
                                         <div class="row">
@@ -47,52 +47,52 @@
                                                         {% else %}
                                                         <textarea name="content" id="content" class="materialize-textarea"></textarea>
                                                         {% endif %}
-                                                        <label for="content">내용</label>
+                                                        <label for="content">{{texts[4]}}</label>
                                                 </div>
                                         </div>
                                         {% if mode == 1 %}
                                         <div class="row">
                                                 <div class="input-field col s12">
                                                         <input type="text" onkeypress="keypress(event)" class="datepicker" name="due_date" value="{{info['due_date']}}">
-                                                        <label for="content">마감 시간</label>
+                                                        <label for="content">{{texts[5]}}</label>
                                                 </div>
                                         </div>
                                         {% endif %}
-                                        <input type = "submit" class="waves-effect waves-light btn" id="submit_button" value="제출"/>
+                                        <input type = "submit" class="waves-effect waves-light btn" id="submit_button" value="{{texts[6]}}"/>
                                 </form>
                         </div>         
                         {% endif %}              
                 </div>
 
                 <div class="list" id="todos">
-                        <span>할 일</span>
+                        <span>{{texts[7]}}</span>
                         <ul class="collection">
                                 {% for info in todos %}
                                         <li class="collection-item">
                                                 <span style="font-weight:bold;" class="title">{{info['title']}}
-                                                        <a href="/up/{{info['id']}}" title="우선순위 올림"><img alt="우선순위 올림" src="../static/img/up.png"/></a>
+                                                        <a href="/up/{{info['id']}}" title="{{texts[8]}}"><img src="../static/img/up.png"/></a>
                                                 </span>
                                                 <p>{{info['content']}}
-                                                        <a href="/down/{{info['id']}}" title="우선순위 내림"><img alt="우선순위 내림" src="../static/img/down.png"/></a>
+                                                        <a href="/down/{{info['id']}}" title="{{texts[9]}}"><img src="../static/img/down.png"/></a>
                                                 </p>
                                                 {% if info['due_date'] %}
-                                                        <p>{{info['due_date']}} 마감</p>
+                                                        <p>{{texts[5]}} : {{info['due_date']}}</p>
                                                 {% endif%}
-                                                <a class="waves-effect waves-light btn" href="/done/{{info['id']}}" id="done_button">완료</a>
-                                                <a class="waves-effect waves-light btn" href="/edit/{{info['id']}}" id="edit_button">수정</a>
-                                                <a class="waves-effect waves-light btn" href="/remove/{{info['id']}}" id="remove_button">삭제</a>
+                                                <a class="waves-effect waves-light btn" href="/done/{{info['id']}}" id="done_button">{{texts[10]}}</a>
+                                                <a class="waves-effect waves-light btn" href="/edit/{{info['id']}}" id="edit_button">{{texts[11]}}</a>
+                                                <a class="waves-effect waves-light btn" href="/remove/{{info['id']}}" id="remove_button">{{texts[12]}}</a>
                                         </li>
                                 {% endfor %}
                         </ul>
                 </div>
                 <div class="list" id="dones">
-                        <span>완료한 일</span>
+                        <span>{{texts[13]}}</span>
                         <ul class="collection">
                                 {% for info in dones %}
                                         <li class="collection-item">
                                                 <span style="font-weight:bold;" class="title">{{info['title']}}</span>
                                                 <p>{{info['content']}}</p>
-                                                <p>{{info['due_date']}} 완료</p>
+                                                <p>{{info['due_date']}} {{texts[10]}}</p>
                                         </li>
                                 {% endfor %}
                         </ul>
