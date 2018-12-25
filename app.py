@@ -107,7 +107,7 @@ def readyToAdd():
     todos, dones = getLists(ip)
     global gi
     data = gi.record_by_addr(ip)
-    texts = getTextsByLang(data['time_zone'])
+    texts = getTextsByLang(data['country_name'])
     return render_template('main.html', todos=todos, dones=dones, mode=2, makeForm=True, texts=texts)
 
 @app.route('/edit/<int:id>')
@@ -126,7 +126,7 @@ def edit(id):
     todos, dones = getLists(ip)
     global gi
     data = gi.record_by_addr(ip)
-    texts = getTextsByLang(data['time_zone'])
+    texts = getTextsByLang(data['country_name'])
     return render_template('main.html', todos=todos, dones=dones, mode=1, makeForm=True, info=info, texts=texts)
 
 @app.route('/modify/<int:id>', methods=['GET'])
