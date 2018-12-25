@@ -11,8 +11,8 @@ app.py가 /home/todo 존재한다고 하자.
 
 ## Installation
 ```
-cd /home/todo
 sudo su
+cd /home/todo
 apt install python3
 apt install python3-pip
 pip3 install flask pytz pygeoip uwsgi
