@@ -65,14 +65,14 @@ server{
 ## Tables
 
 ```
-CREATE TABLE "Users" ( 
-    ip VARCHAR(15) NOT NULL PRIMARY KEY, 
+CREATE TABLE "user" ( 
+    ip INET NOT NULL PRIMARY KEY, 
     country VARCHAR(100) NOT NULL,
     timezone VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE "Todos" ( 
-    ip VARCHAR(15) REFERENCES "Users"(ip), 
+CREATE TABLE "todo" ( 
+    ip INET REFERENCES "user"(ip), 
     priority int NOT NULL, 
     title TEXT NOT NULL, 
     content TEXT NOT NULL, 
@@ -80,9 +80,9 @@ CREATE TABLE "Todos" (
     PRIMARY KEY(ip, priority)
 );
 
-CREATE TABLE "Completed_todos" (
+CREATE TABLE "completed_todo" (
     id SERIAL PRIMARY KEY, 
-    ip VARCHAR(15) REFERENCES "Users"(ip), 
+    ip INET REFERENCES "user"(ip), 
     title TEXT NOT NULL, 
     content TEXT NOT NULL, 
     completed_datetime TIMESTAMP NOT NULL
@@ -97,10 +97,24 @@ CREATE TABLE "Completed_todos" (
 Get country and timezone of the input ```ip```
 ```
 CREATE FUNCTION sp_select_user_info(
-    p_ip VARCHAR) 
+    p_ip INET) 
 RETURNS TABLE(o_country VARCHAR, o_timezone VARCHAR) AS $$
 BEGIN
-    RETURN QUERY SELECT country, timezone FROM "Users" WHERE ip = p_ip; 
+    RETURN QUERY SELECT country, timezone FROM "user" WHERE ip = p_ip; 
+END; 
+$$ LANGUAGE plpgsql;
+```
+
+2. sp_insert_user_info  
+Insert ip, country, and timezone
+```
+CREATE FUNCTION sp_insert_user_info(
+    p_ip INET,
+    p_country VARCHAR,
+    p_timezone VARCHAR) 
+RETURNS void AS $$
+BEGIN
+    INSERT INTO "user"(ip, country, timezone) VALUES(p_ip, p_country, p_timezone); 
 END; 
 $$ LANGUAGE plpgsql;
 ```
