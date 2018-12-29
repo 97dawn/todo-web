@@ -140,7 +140,36 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
-### 4. sp_completed_todo
+### 4. sp_remove_todo
+Remove todo data from the 'todo' table
+```
+CREATE FUNCTION sp_remove_todo(
+    p_ip INET,
+    p_priority INT) 
+RETURNS void AS $$
+DECLARE
+    count int;
+    i int;
+BEGIN
+    i := p_priority;
+    SELECT COUNT(*) INTO count FROM "todo" WHERE ip = p_ip;
+    DELETE FROM "todo" WHERE ip = p_ip AND priority = p_priority;
+    IF i <= count - 1 THEN
+        LOOP
+            IF i = count THEN
+                DELETE FROM "todo" WHERE ip = p_ip AND priority = i - 1;
+                EXIT;
+            ELSE
+                i := i + 1;
+                UPDATE "todo" SET priority = i - 1 WHERE ip = p_ip AND priority = i; 
+            END IF;
+        END LOOP;   
+    END IF;
+END; 
+$$ LANGUAGE plpgsql;
+```
+
+### 5. sp_completed_todo
 Move todo data from the 'todo' table to the 'completed_todo' table
 ```
 CREATE FUNCTION sp_completed_todo(
@@ -150,8 +179,24 @@ CREATE FUNCTION sp_completed_todo(
     p_content TEXT,
     p_completed_datetime TIMESTAMP) 
 RETURNS void AS $$
+DECLARE
+    count int;
+    i int;
 BEGIN
+    i := p_priority;
+    SELECT COUNT(*) INTO count FROM "todo" WHERE ip = p_ip;
     DELETE FROM "todo" WHERE ip = p_ip AND priority = p_priority;
+    IF i <= count - 1 THEN
+        LOOP
+            IF i = count THEN
+                DELETE FROM "todo" WHERE ip = p_ip AND priority = i - 1;
+                EXIT;
+            ELSE
+                i := i + 1;
+                UPDATE "todo" SET priority = i - 1 WHERE ip = p_ip AND priority = i; 
+            END IF;
+        END LOOP;   
+    END IF;
     INSERT INTO "completed_todo"(ip, title, content, completed_datetime) VALUES(p_ip, p_title, p_content, p_completed_datetime);
 END; 
 $$ LANGUAGE plpgsql;
