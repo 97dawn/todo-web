@@ -1,5 +1,5 @@
 # Tech Stack
-python3 Flask, HTML, CSS, JS, Materialize(Framework), Nginx, uWSGI, AWS EC2, ubuntu
+Python3, Flask, HTML, CSS, JavaScript, Materialize(Framework), Nginx, uWSGI, AWS EC2, Ubuntu, PostgreSQL
 
 # Setting 
 Your current path must be the path where app.py is.  
@@ -13,8 +13,9 @@ sudo su
 cd /home/todo
 apt install python3
 apt install python3-pip
-pip3 install flask pytz pygeoip uwsgi
+pip3 install flask pytz pygeoip uwsgi psycog2-binary psycopg2
 apt-get install nginx
+apt-get install postgresql postgresql-contrib
 wget -N http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
 gunzip GeoLiteCity.dat.gz
 
