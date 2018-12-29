@@ -93,7 +93,7 @@ CREATE TABLE "completed_todo" (
 ![ER Diagram](er_diagram.png)
 
 ## Stored Procedures
-1. sp_select_user_info  
+### 1. sp_select_user_info  
 Get country and timezone of the input ```ip```
 ```
 CREATE FUNCTION sp_select_user_info(
@@ -105,7 +105,7 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
-2. sp_insert_user_info  
+### 2. sp_insert_user_info  
 Insert ip, country, and timezone
 ```
 CREATE FUNCTION sp_insert_user_info(
@@ -119,5 +119,25 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
+### 3. sp_insert_todo 
+Insert new todo
+```
+CREATE FUNCTION sp_insert_todo(
+    p_ip INET,
+    p_title TEXT,
+    p_content TEXT) 
+RETURNS void AS $$
+DECLARE
+    max_priority int;
+BEGIN
+    SELECT MAX(priority) INTO max_priority FROM "todo" WHERE ip = p_ip;
+    IF max_priority IS NULL THEN
+        INSERT INTO "todo"(ip, priority, title, content) VALUES(p_ip, 0, p_title, p_content);  
+    ELSE
+        INSERT INTO "todo"(ip, priority, title, content) VALUES(p_ip, max_priority + 1, p_title, p_content); 
+    END IF;
+END; 
+$$ LANGUAGE plpgsql;
+```
 # Resource
 https://pythonhosted.org/pygeoip/pygeoip.const-pysrc.html
