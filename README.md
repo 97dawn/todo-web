@@ -59,5 +59,46 @@ server{
 
 2. service nginx start
 ```
+
+# Database
+
+## Tables
+
+```
+CREATE TABLE "Users" ( 
+    ip VARCHAR(15) NOT NULL PRIMARY KEY, 
+    country VARCHAR(100) NOT NULL,
+    timezone VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE "Todos" ( 
+    ip VARCHAR(15) REFERENCES "Users"(ip), 
+    priority int NOT NULL, 
+    title TEXT NOT NULL, 
+    content TEXT NOT NULL, 
+    due_date DATE NULL, 
+    PRIMARY KEY(ip, priority)
+);
+
+CREATE TABLE "Completed_todos" (
+    id SERIAL PRIMARY KEY, 
+    ip VARCHAR(15) REFERENCES "Users"(ip), 
+    title TEXT NOT NULL, 
+    content TEXT NOT NULL, 
+    completed_datetime TIMESTAMP NOT NULL
+);
+```
+
+## ER Diagram
+![ER Diagram](er_diagram.png)
+
+## Stored Procedures
+CREATE FUNCTION inc(val integer) RETURNS integer AS $$
+dvdrental$# BEGIN
+dvdrental$# RETURN val + 1;
+dvdrental$# END; $$
+dvdrental-# LANGUAGE PLPGSQL;
+
+
 # Resource
 https://pythonhosted.org/pygeoip/pygeoip.const-pysrc.html
