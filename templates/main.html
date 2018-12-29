@@ -69,18 +69,18 @@
                         <ul class="collection">
                                 {% for info in todos %}
                                         <li class="collection-item">
-                                                <span style="font-weight:bold;" class="title">{{info['title']}}
-                                                        <a href="/up/{{info['id']}}" title="{{texts[8]}}"><img src="../static/img/up.png"/></a>
+                                                <span style="font-weight:bold;" class="title">{{info[1]}}
+                                                        <a href="/up/{{info[0]}}" title="{{texts[8]}}"><img src="../static/img/up.png"/></a>
                                                 </span>
-                                                <p>{{info['content']}}
-                                                        <a href="/down/{{info['id']}}" title="{{texts[9]}}"><img src="../static/img/down.png"/></a>
+                                                <p>{{info[2]}}
+                                                        <a href="/down/{{info[0]}}" title="{{texts[9]}}"><img src="../static/img/down.png"/></a>
                                                 </p>
-                                                {% if info['due_date'] %}
-                                                        <p>{{texts[5]}} : {{info['due_date']}}</p>
+                                                {% if info[3] %}
+                                                        <p>{{texts[5]}} : {{info[3]}}</p>
                                                 {% endif%}
-                                                <a class="waves-effect waves-light btn" href="/done/{{info['id']}}" id="done_button">{{texts[10]}}</a>
-                                                <a class="waves-effect waves-light btn" href="/edit/{{info['id']}}" id="edit_button">{{texts[11]}}</a>
-                                                <a class="waves-effect waves-light btn" href="/remove/{{info['id']}}" id="remove_button">{{texts[12]}}</a>
+                                                <a class="waves-effect waves-light btn" href="/done/{{info[0]}}" id="done_button">{{texts[10]}}</a>
+                                                <a class="waves-effect waves-light btn" href="/edit/{{info[0]}}" id="edit_button">{{texts[11]}}</a>
+                                                <a class="waves-effect waves-light btn" href="/remove/{{info[0]}}" id="remove_button">{{texts[12]}}</a>
                                         </li>
                                 {% endfor %}
                         </ul>
@@ -90,9 +90,9 @@
                         <ul class="collection">
                                 {% for info in dones %}
                                         <li class="collection-item">
-                                                <span style="font-weight:bold;" class="title">{{info['title']}}</span>
-                                                <p>{{info['content']}}</p>
-                                                <p>{{info['due_date']}} {{texts[10]}}</p>
+                                                <span style="font-weight:bold;" class="title">{{info[0]}}</span>
+                                                <p>{{info[1]}}</p>
+                                                <p>{{info[2]}} {{texts[10]}}</p>
                                         </li>
                                 {% endfor %}
                         </ul>

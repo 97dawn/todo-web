@@ -123,14 +123,27 @@ $$ LANGUAGE plpgsql;
 Get all todos from the 'todo' table
 ```
 CREATE FUNCTION sp_select_todos( p_ip INET ) 
-RETURNS TABLE(o_title TEXT, o_content TEXT, o_due_date DATE) AS $$
+RETURNS TABLE(o_priority INT, o_title TEXT, o_content TEXT, o_due_date DATE) AS $$
 BEGIN
-    RETURN QUERY SELECT title, content, due_date FROM "todo" WHERE ip = p_ip ORDER BY priority ASC; 
+    RETURN QUERY SELECT priority, title, content, due_date FROM "todo" WHERE ip = p_ip ORDER BY priority ASC; 
 END; 
 $$ LANGUAGE plpgsql;
 ```
 
-### 4. sp_insert_todo 
+### 4. sp_select_todo
+Get a todo from the 'todo' table
+```
+CREATE FUNCTION sp_select_todo( 
+    p_ip INET,
+    p_priority INT ) 
+RETURNS TABLE(o_title TEXT, o_content TEXT, o_due_date DATE) AS $$
+BEGIN
+    RETURN QUERY SELECT title, content, due_date FROM "todo" WHERE ip = p_ip AND priority = p_priority; 
+END; 
+$$ LANGUAGE plpgsql;
+```
+
+### 5. sp_insert_todo 
 Insert new todo data into the 'todo' table
 ```
 CREATE FUNCTION sp_insert_todo(
@@ -151,7 +164,7 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
-### 5. sp_remove_todo
+### 6. sp_remove_todo
 Remove todo data from the 'todo' table and reorder the priorities
 ```
 CREATE FUNCTION sp_remove_todo(
@@ -180,7 +193,7 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
-### 6. sp_update_todo 
+### 7. sp_update_todo 
 Update todo data from the 'todo' table
 ```
 CREATE FUNCTION sp_update_todo(
@@ -196,22 +209,51 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
-### 7. sp_completed_todo
+### 8. sp_increase_priority_todo 
+Update todo data from the 'todo' table
+```
+CREATE FUNCTION sp_increase_priority_todo(
+    p_ip INET,
+    p_priority INT) 
+RETURNS void AS $$
+BEGIN
+    UPDATE "todo" SET priority = -1 WHERE ip = p_ip AND priority = p_priority - 1; 
+    UPDATE "todo" SET priority = p_priority - 1 WHERE ip = p_ip AND priority = p_priority; 
+    UPDATE "todo" SET priority = p_priority WHERE ip = p_ip AND priority = - 1; 
+END; 
+$$ LANGUAGE plpgsql;
+```
+### 9. sp_decrease_priority_todo 
+Update todo data from the 'todo' table
+```
+CREATE FUNCTION sp_decrease_priority_todo(
+    p_ip INET,
+    p_priority INT) 
+RETURNS void AS $$
+BEGIN
+    UPDATE "todo" SET priority = -1 WHERE ip = p_ip AND priority = p_priority + 1; 
+    UPDATE "todo" SET priority = p_priority + 1 WHERE ip = p_ip AND priority = p_priority; 
+    UPDATE "todo" SET priority = p_priority WHERE ip = p_ip AND priority = - 1; 
+END; 
+$$ LANGUAGE plpgsql;
+```
+### 10. sp_completed_todo
 Move todo data from the 'todo' table to the 'completed_todo' table and reorder the priorities
 ```
 CREATE FUNCTION sp_completed_todo(
     p_ip INET,
     p_priority INT,
-    p_title TEXT,
-    p_content TEXT,
     p_completed_datetime TIMESTAMP) 
 RETURNS void AS $$
 DECLARE
+    v_title text;
+    v_content text;
     count int;
     i int;
 BEGIN
     i := p_priority;
     SELECT COUNT(*) INTO count FROM "todo" WHERE ip = p_ip;
+    SELECT title, content INTO v_title, v_content FROM "todo" WHERE ip = p_ip and priority = p_priority;
     DELETE FROM "todo" WHERE ip = p_ip AND priority = p_priority;
     IF i <= count - 1 THEN
         LOOP
@@ -224,12 +266,12 @@ BEGIN
             END IF;
         END LOOP;   
     END IF;
-    INSERT INTO "completed_todo"(ip, title, content, completed_datetime) VALUES(p_ip, p_title, p_content, p_completed_datetime);
+    INSERT INTO "completed_todo"(ip, title, content, completed_datetime) VALUES(p_ip, v_title, v_content, p_completed_datetime);
 END; 
 $$ LANGUAGE plpgsql;
 ```
 
-### 8. sp_select_completed_todos  
+### 11. sp_select_completed_todos  
 Get all completed todos from the 'completed_todo' table
 ```
 CREATE FUNCTION sp_select_completed_todos( p_ip INET ) 
