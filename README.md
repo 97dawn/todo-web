@@ -94,7 +94,7 @@ CREATE TABLE "completed_todo" (
 
 ## Stored Procedures
 ### 1. sp_select_user_info  
-Get country and timezone of the input ```ip```
+Get country and timezone of the input ```ip``` from the 'user' table
 ```
 CREATE FUNCTION sp_select_user_info(
     p_ip INET) 
@@ -106,7 +106,7 @@ $$ LANGUAGE plpgsql;
 ```
 
 ### 2. sp_insert_user_info  
-Insert ip, country, and timezone
+Insert ip, country, and timezone into the 'user' table
 ```
 CREATE FUNCTION sp_insert_user_info(
     p_ip INET,
@@ -120,7 +120,7 @@ $$ LANGUAGE plpgsql;
 ```
 
 ### 3. sp_insert_todo 
-Insert new todo
+Insert new todo data into the 'todo' table
 ```
 CREATE FUNCTION sp_insert_todo(
     p_ip INET,
@@ -136,6 +136,23 @@ BEGIN
     ELSE
         INSERT INTO "todo"(ip, priority, title, content) VALUES(p_ip, max_priority + 1, p_title, p_content); 
     END IF;
+END; 
+$$ LANGUAGE plpgsql;
+```
+
+### 4. sp_completed_todo
+Move todo data from the 'todo' table to the 'completed_todo' table
+```
+CREATE FUNCTION sp_completed_todo(
+    p_ip INET,
+    p_priority INT,
+    p_title TEXT,
+    p_content TEXT,
+    p_completed_datetime TIMESTAMP) 
+RETURNS void AS $$
+BEGIN
+    DELETE FROM "todo" WHERE ip = p_ip AND priority = p_priority;
+    INSERT INTO "completed_todo"(ip, title, content, completed_datetime) VALUES(p_ip, p_title, p_content, p_completed_datetime);
 END; 
 $$ LANGUAGE plpgsql;
 ```
