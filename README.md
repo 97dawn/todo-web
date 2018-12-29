@@ -119,7 +119,18 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
-### 3. sp_insert_todo 
+### 3. sp_select_todos  
+Get all todos from the 'todo' table
+```
+CREATE FUNCTION sp_select_todos( p_ip INET ) 
+RETURNS TABLE(o_title TEXT, o_content TEXT, o_due_date DATE) AS $$
+BEGIN
+    RETURN QUERY SELECT title, content, due_date FROM "todo" WHERE ip = p_ip ORDER BY priority ASC; 
+END; 
+$$ LANGUAGE plpgsql;
+```
+
+### 4. sp_insert_todo 
 Insert new todo data into the 'todo' table
 ```
 CREATE FUNCTION sp_insert_todo(
@@ -140,8 +151,8 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
-### 4. sp_remove_todo
-Remove todo data from the 'todo' table
+### 5. sp_remove_todo
+Remove todo data from the 'todo' table and reorder the priorities
 ```
 CREATE FUNCTION sp_remove_todo(
     p_ip INET,
@@ -169,8 +180,24 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
-### 5. sp_completed_todo
-Move todo data from the 'todo' table to the 'completed_todo' table
+### 6. sp_update_todo 
+Update todo data from the 'todo' table
+```
+CREATE FUNCTION sp_update_todo(
+    p_ip INET,
+    p_priority INT,
+    p_title TEXT,
+    p_content TEXT,
+    p_due_date DATE) 
+RETURNS void AS $$
+BEGIN
+    UPDATE "todo" SET title = p_title, content = p_content, due_date = p_due_date WHERE ip = p_ip AND priority = p_priority; 
+END; 
+$$ LANGUAGE plpgsql;
+```
+
+### 7. sp_completed_todo
+Move todo data from the 'todo' table to the 'completed_todo' table and reorder the priorities
 ```
 CREATE FUNCTION sp_completed_todo(
     p_ip INET,
@@ -198,6 +225,17 @@ BEGIN
         END LOOP;   
     END IF;
     INSERT INTO "completed_todo"(ip, title, content, completed_datetime) VALUES(p_ip, p_title, p_content, p_completed_datetime);
+END; 
+$$ LANGUAGE plpgsql;
+```
+
+### 8. sp_select_completed_todos  
+Get all completed todos from the 'completed_todo' table
+```
+CREATE FUNCTION sp_select_completed_todos( p_ip INET ) 
+RETURNS TABLE(o_title TEXT, o_content TEXT, o_completed_datetime TIMESTAMP) AS $$
+BEGIN
+    RETURN QUERY SELECT title, content, completed_datetime FROM "completed_todo" WHERE ip = p_ip ORDER BY id ASC; 
 END; 
 $$ LANGUAGE plpgsql;
 ```
