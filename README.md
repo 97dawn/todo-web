@@ -93,12 +93,17 @@ CREATE TABLE "Completed_todos" (
 ![ER Diagram](er_diagram.png)
 
 ## Stored Procedures
-CREATE FUNCTION inc(val integer) RETURNS integer AS $$
-dvdrental$# BEGIN
-dvdrental$# RETURN val + 1;
-dvdrental$# END; $$
-dvdrental-# LANGUAGE PLPGSQL;
-
+1. sp_select_user_info  
+Get country and timezone of the input ```ip```
+```
+CREATE FUNCTION sp_select_user_info(
+    p_ip VARCHAR) 
+RETURNS TABLE(o_country VARCHAR, o_timezone VARCHAR) AS $$
+BEGIN
+    RETURN QUERY SELECT country, timezone FROM "Users" WHERE ip = p_ip; 
+END; 
+$$ LANGUAGE plpgsql;
+```
 
 # Resource
 https://pythonhosted.org/pygeoip/pygeoip.const-pysrc.html
