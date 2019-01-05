@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect
 from datetime import datetime
-import json, os, pytz, pygeoip,traceback
+import pytz, pygeoip
 from lib import refresh, getUserInfo, convertStringtoDate, convertDatetoString, getTextsByLang
 from db import DB
+import traceback
 
 app = Flask(__name__) 
 gi = pygeoip.GeoIP('GeoLiteCity.dat')
@@ -88,12 +89,13 @@ def edit(id):
     todos = db.select_todos(data)
     dones = db.select_completed_todos(data)
     data = (ip, id,)
-    info = db.select_todo(data)
+    data = list(db.select_todo(data))
+    info = {'id':id, 'title':data[0], 'content':data[1]}
     # convert due_date
-    if info[2] is not None:
-        info[2] = convertDatetoString(info[2])
+    if data[2] is not None:
+        info['due_date'] = convertDatetoString(data[2])
     else:
-        info[2] = ''
+        info['due_date'] = ''
     data = gi.record_by_addr(ip)
     texts = getTextsByLang(data['country_name'])
     return render_template('main.html', todos=todos, dones=dones, mode=1, makeForm=True, info=info, texts=texts)

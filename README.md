@@ -223,6 +223,7 @@ BEGIN
 END; 
 $$ LANGUAGE plpgsql;
 ```
+
 ### 9. sp_decrease_priority_todo 
 Update todo data from the 'todo' table
 ```
@@ -237,6 +238,7 @@ BEGIN
 END; 
 $$ LANGUAGE plpgsql;
 ```
+
 ### 10. sp_completed_todo
 Move todo data from the 'todo' table to the 'completed_todo' table and reorder the priorities
 ```
@@ -281,5 +283,6 @@ BEGIN
 END; 
 $$ LANGUAGE plpgsql;
 ```
+
 # Resource
 https://pythonhosted.org/pygeoip/pygeoip.const-pysrc.html

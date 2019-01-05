@@ -1,6 +1,6 @@
 from flask import render_template
 from datetime import datetime
-import json, os, pytz, pygeoip,traceback
+import pytz, pygeoip
 
 
 def convertStringtoDate(eng):
@@ -11,8 +11,7 @@ def convertStringtoDate(eng):
     return year+'-'+months[month]+'-'+day
 
 def convertDatetoString(d):
-    d = d.split('-')
-    year, month, day = d[0], d[1], d[2]
+    year, month, day = str(d.year), '%.2d'%(d.month), '%.2d'%(d.day)
     months = {'01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec'}
     return months[month]+' '+day+', '+year
 
