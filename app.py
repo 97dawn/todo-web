@@ -1,9 +1,8 @@
 from flask import Flask, render_template, request, redirect
 from datetime import datetime
-import pytz, pygeoip
+import pytz, pygeoip, traceback
 from lib import refresh, getUserInfo, convertStringtoDate, convertDatetoString, getTextsByLang
 from db import DB
-import traceback
 
 app = Flask(__name__) 
 gi = pygeoip.GeoIP('GeoLiteCity.dat')
@@ -12,11 +11,16 @@ db = DB()
  
 @app.route('/')
 def main():
-    global gi, db
+    global db
     # check ip
     ip = request.remote_addr
     user = getUserInfo(db, ip)
-    return refresh(db, user)
+    try:
+        return refresh(db, user)
+    except Exception:
+        error = getTextsByLang(user['country'], is_error = True)
+        return render_template('error.html', error=error)
+
 
 @app.route('/add',methods = ['GET'])
 def add():
@@ -30,7 +34,6 @@ def add():
             # put new Todo at the end of list
             data = (ip, title, content,)
             db.insert_todo(data)
-        # return refresh(db, user)
         return redirect('/')
     
 @app.route('/up/<int:id>')
@@ -42,7 +45,6 @@ def up(id):
         # increase priority of the todo
         data = (ip, id, )
         db.increase_priority_todo(data)
-        # return refresh(db, user)
         return redirect('/')
 
 @app.route('/down/<int:id>')
@@ -54,12 +56,11 @@ def down(id):
         # decrease priority of the todo
         data = (ip, id, )
         db.decrease_priority_todo(data)
-        # return refresh(db, user)
         return redirect('/')
 
 @app.route('/done/<int:id>')
 def done(id):
-    global gi, db
+    global db
     ip = request.remote_addr
     user = getUserInfo(db, ip)
     local_time = pytz.timezone(user['timezone'])
@@ -67,7 +68,6 @@ def done(id):
     time = time.astimezone(local_time)
     data = (ip, id, time.strftime('%Y-%m-%d %H:%M:%S'))
     db.completed_todo(data)
-    # return refresh(db, user)
     return redirect('/')
 
 @app.route('/readyToAdd')
@@ -117,7 +117,6 @@ def modify(id):
         # update target Todo
         data = (ip, id, title, content, due_date,)
         db.update_todo(data)
-        # return refresh(db, user)
         return redirect('/')
     
 @app.route('/remove/<int:id>')
@@ -128,7 +127,6 @@ def remove(id):
     # remove target Todo
     data = (ip, id,)
     db.remove_todo(data)
-    # return refresh(db, user)
     return redirect('/')
     
 if __name__ == "__main__":

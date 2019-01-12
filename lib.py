@@ -37,11 +37,17 @@ def refresh(db, user):
     alerts.sort()
     return render_template('main.html', todos=todos, dones=dones, mode=0, alerts=alerts, texts=texts)
 
-def getTextsByLang(country_name):
-    if country_name in ['Korea, Republic of',"Korea, Democratic People's Republic of"]:
-        return ["마감 기한이 지났습니다", "취소","할 일 추가","제목","내용","마감일","제출","할 일","우선순위 올림","우선순위 내림","완료","수정","삭제","완료한 일"]
+def getTextsByLang(country_name, is_error=False):
+    if not is_error:
+        if country_name in ['Korea, Republic of',"Korea, Democratic People's Republic of"]:
+            return ["마감 기한이 지났습니다", "취소","할 일 추가","제목","내용","마감일","제출","할 일","우선순위 올림","우선순위 내림","완료","수정","삭제","완료한 일"]
+        else:
+            return ["Expired","Cancel","Add Todo","Title","Content","Deadline","Submit","Todo","Increase Priority","Decrease Priority","Complete","Edit","Remove","Completed Todo"]
     else:
-        return ["Expired","Cancel","Add Todo","Title","Content","Deadline","Submit","Todo","Increase Priority","Decrease Priority","Complete","Edit","Remove","Completed Todo"]
+        if country_name in ['Korea, Republic of',"Korea, Democratic People's Republic of"]:
+            return "우리는 당신이 올바른 유저가 아니라고 판단하여 막았습니다."
+        else:
+            return "We blocked you because you seem an invalid user."
 
 def getUserInfo(db, ip):
     data = (ip,)
